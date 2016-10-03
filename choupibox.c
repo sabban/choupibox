@@ -30,68 +30,57 @@ ISR(PCINT0_vect) {
   // _delay_ms(500); // Giant friggin' debounce delay
 
     uint8_t changedbits;
-    uint8_t now; 
-    uint8_t last; 
-    changedbits = PINA ^ portAhistory;
+
+    changedbits = (PINA ^ portAhistory) ;
+    changedbits &= portAhistory; // rising edge
     portAhistory = PINA;
-    now = PINA & (1 << PA0) ;
-    if(changedbits & (1 << PA0)) //detect which bit changed
-      if (now != last)  { 
-	if (now > 0) { //rising edge
+     
+    if(changedbits & (1 << PA0)) { //detect which bit changed 
 	  shift(led_array);
 	  led_array[0] = 0x00;
 	  led_array[1] = 0x00;
 	  led_array[2] = 0xFF;
 	  spi_transmit_sync (led_array, 3 * NUM_LEDS);
-	    _delay_ms(750);
 	  /* PCINT0 changed */
-	}
-	last = now;
-      }
+    }
+    
 
-    if(changedbits & (1 << PA1))
-    {
-      shift(led_array);
-      led_array[0] = 0x00;
-      led_array[1] = 0xFF;
-      led_array[2] = 0xFF;
-      spi_transmit_sync (led_array, 3 * NUM_LEDS);
-      _delay_ms(750);
-    /* PCINT1 changed */
+    if(changedbits & (1 << PA1)){
+	  shift(led_array);
+	  led_array[0] = 0x00;
+	  led_array[1] = 0xFF;
+	  led_array[2] = 0xFF;
+	  spi_transmit_sync (led_array, 3 * NUM_LEDS);
+	/* PCINT1 changed */
     }
 
-    if(changedbits & (1 << PA2))
-    {
+    if(changedbits & (1 << PA2)) { 
       shift(led_array);
       led_array[0] = 0x00;
       led_array[1] = 0xFF;
       led_array[2] = 0x00;
       spi_transmit_sync (led_array, 3 * NUM_LEDS);
-      _delay_ms(750);
       /* PCINT2 changed */
     }
 
-    if(changedbits & (1 << PA3))
-    {
+    if(changedbits & (1 << PA3)) {
       shift(led_array);
       led_array[0] = 0xFF;
       led_array[1] = 0xFF;
       led_array[2] = 0xFF;
       spi_transmit_sync (led_array, 3 * NUM_LEDS);
-      _delay_ms(750);
-	/* PCINT3 changed */
+      /* PCINT3 changed */
     }
 
-    if(changedbits & (1 << PA4))
-    {
+    if(changedbits & (1 << PA4)) {
       shift(led_array);
       led_array[0] = 0xFF;
       led_array[1] = 0x00;
       led_array[2] = 0x00;
       spi_transmit_sync (led_array, 3 * NUM_LEDS);
-      _delay_ms(750);
-	/* PCINT4 changed */
     }
+    /* PCINT4 changed */
+
 
  }
 
